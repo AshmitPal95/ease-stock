@@ -1,4 +1,3 @@
-
 import main
 import tkinter as tk
 import mysql.connector
@@ -17,10 +16,10 @@ def password_box():
             conn = mysql.connector.connect(
                     host="localhost",  
                     user='root',
-                    password=db_pwd
+                    password=f"{db_pwd}"
                 )
             conn.close()
-            config.db_password=db_pwd
+            config.get_db_password(db_pwd)
             root.destroy()
             main.main_function()
         except mysql.connector.Error as err:
@@ -29,7 +28,7 @@ def password_box():
 
 
     root=tk.Tk()
-    root.title(" User Password Box")
+    root.title("Database Password Box")
     root.geometry("400x300")
 
     db_pwd_label=tk.Label(root,text="Enter Database Password:", width=25, height=2,font=("Helvetica", 10, "bold"))

@@ -1,20 +1,15 @@
 import mysql.connector
 import main_ui as userinterface
-
+import config
 def main_function():
     
     create_db()
     userinterface.main()
-def db_connector():
-    return mysql.connector.connect(
-        host="localhost",   
-        user="root",
-        password="HelloWorld"
-    )
+
 
 def create_db():
     print("creating DB tables")
-    conn=db_connector()
+    conn=config.db_connector()
     cursor = conn.cursor()
     
     cursor.execute("CREATE DATABASE IF NOT EXISTS ACCOUNTING_RECORDS")
@@ -75,6 +70,5 @@ def create_db():
     cursor.close()
     conn.close()
 
-create_db()
-userinterface.main()
+
 

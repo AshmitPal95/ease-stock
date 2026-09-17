@@ -8,8 +8,8 @@ def Password_checker():
         user_pwd_label.config(text="Incorrect Password. Try Again.",fg="red")
     else:
         root.destroy()
-        import main
-        main.main_function()        
+        import db_password_box
+        db_password_box.password_box()       
 
 def Hide_passkey():
     if check_var.get():
