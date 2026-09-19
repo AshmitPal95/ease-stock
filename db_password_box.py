@@ -31,7 +31,7 @@ def password_box():
     root.title("Database Password Box")
     root.geometry("400x300")
 
-    db_pwd_label=tk.Label(root,text="Enter Database Password:", width=25, height=2,font=("Helvetica", 10, "bold"))
+    db_pwd_label=tk.Label(root,text="Enter Database Password:", width=50, height=2,font=("Helvetica", 10, "bold"))
     db_pwd_label.pack(pady=20)
 
     db_pwd_entry=tk.Entry(root,width=35)

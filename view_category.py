@@ -16,9 +16,9 @@ def view():
 
         # Insert filtered rows
         for row in rows:
-            category_id,category_name = row
+            category_id,category_name,total_worth = row
             if filter_text:  # if search text entered
-                if category_name.lower().startswith(filter_text.lower()):
+                if filter_text.lower() in category_name.lower():
                     tree.insert("", "end", values=row)
             else:  # show all if no filter
                 tree.insert("", "end", values=row)
@@ -37,6 +37,7 @@ def view():
             if values:
                 category_id_var.set(values[0])
                 category_name_var.set(values[1])
+                total_worth_var.set(values[2])
     def modify_category():
         category_id = category_id_var.get()
         new_name = category_name_var.get().strip()
@@ -52,6 +53,7 @@ def view():
                 # Clear the Entry fields
                 category_id_var.set("")
                 category_name_var.set("")
+                total_worth_var.set(0.0)
                 # Optionally clear Treeview selection too
                 tree.selection_remove(tree.selection())
             except Exception as e:
@@ -77,6 +79,7 @@ def view():
                 # Clear the entry fields
                 category_id_var.set("")
                 category_name_var.set("")
+                total_worth_var.set(0.0)
             
                 # Clear Treeview selection
                 tree.selection_remove(tree.selection())
@@ -96,7 +99,7 @@ def view():
     screen_width = root.winfo_screenwidth()
     screen_height = root.winfo_screenheight() 
     window_width = 450
-    window_height = 400   
+    window_height = 450   
     x = (screen_width // 2) - (window_width // 2)
     y = (screen_height // 2) - (window_height // 2) 
        
@@ -129,7 +132,7 @@ def view():
 
 
     # --- Treeview ---
-    columns = ("Category ID", "Category Name")
+    columns = ("Category ID", "Category Name","Total Worth")
     tree = ttk.Treeview(frame, columns=columns, show="headings")
 
     # Configure each column individually
@@ -139,22 +142,32 @@ def view():
     tree.heading("Category Name", text="Category Name")
     tree.column("Category Name", width=150)
 
+    tree.heading("Total Worth", text="Total Worth")
+    tree.column("Total Worth",width=100)
+
     tree.pack(fill="both", expand=True, pady=10)
     tree.bind("<<TreeviewSelect>>", on_select)
 
     # --- Category controls in one line ---
     category_id_var = tk.StringVar()
     category_name_var = tk.StringVar()
+    total_worth_var=tk.DoubleVar()
 
-    cat_frame = tk.Frame(frame)
-    cat_frame.pack(fill="x", pady=10)
+    cat_frame_1 = tk.Frame(frame)
+    cat_frame_1.pack(fill="x", pady=10)
 
-    tk.Label(cat_frame, text="Category ID:", font=("Helvetica", 10, "bold")).pack(side="left", padx=(0,5))
-    tk.Label(cat_frame, textvariable=category_id_var, width=8).pack(side="left", padx=(0,10))
+    tk.Label(cat_frame_1, text="Category ID:", font=("Helvetica", 10, "bold")).pack(side="left", padx=(0,5))
+    tk.Label(cat_frame_1, textvariable=category_id_var, width=8).pack(side="left", padx=(0,10))
 
-    tk.Label(cat_frame, text="Category Name:", font=("Helvetica", 10, "bold")).pack(side="left", padx=(0,5))
-    tk.Entry(cat_frame, textvariable=category_name_var, width=20).pack(side="left", padx=(0,5))
+    tk.Label(cat_frame_1, text="Category Name:", font=("Helvetica", 10, "bold")).pack(side="left", padx=(0,5))
+    tk.Entry(cat_frame_1, textvariable=category_name_var, width=20).pack(side="left", padx=(0,5))
 
+    cat_frame_2=tk.Frame(frame)
+    cat_frame_2.pack(fill="x",pady=10)
+
+    tk.Label(cat_frame_2, text="Total Worth:", font=("Helvetica", 10, "bold")).pack(side="left", padx=(0,5))
+    tk.Label(cat_frame_2, textvariable=total_worth_var, width=8).pack(side="left", padx=(0,10))
+    
     # --- Buttons below controls ---
     btn_frame = tk.Frame(frame)
     btn_frame.pack(pady=10)

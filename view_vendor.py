@@ -15,9 +15,9 @@ def view():
 
         # Insert filtered rows
         for row in rows:
-            vendor_id,vendor_name,vendor_address = row
+            vendor_id,vendor_name,vendor_address,total_worth = row
             if filter_text:  # if search text entered
-                if vendor_name.lower().startswith(filter_text.lower()):
+                if filter_text.lower() in vendor_name.lower():
                     tree.insert("", "end", values=row)
             else:  # show all if no filter
                 tree.insert("", "end", values=row)
@@ -38,6 +38,7 @@ def view():
                 vendor_name_var.set(values[1])
                 vendor_address_text.delete("1.0", tk.END)
                 vendor_address_text.insert("1.0", values[2])
+                total_worth_var.set(values[3])
     def modify_vendor():
         vendor_id = vendor_id_var.get()
         new_name = vendor_name_var.get().strip()
@@ -55,6 +56,7 @@ def view():
                 vendor_id_var.set("")
                 vendor_name_var.set("")
                 vendor_address_text.delete("1.0", tk.END)
+                total_worth_var.set(0.0)
                 # Optionally clear Treeview selection too
                 tree.selection_remove(tree.selection())
             except Exception as e:
@@ -81,6 +83,7 @@ def view():
                 vendor_id_var.set("")
                 vendor_name_var.set("")
                 vendor_address_text.delete("1.0", tk.END)
+                total_worth_var.set(0.0)
             
                 # Clear Treeview selection
                 tree.selection_remove(tree.selection())
@@ -133,7 +136,7 @@ def view():
 
 
     # --- Treeview ---
-    columns = ("Vendor ID", "Vendor Name","Vendor Address")
+    columns = ("Vendor ID", "Vendor Name","Vendor Address","Total Worth")
     tree = ttk.Treeview(frame, columns=columns, show="headings")
 
     # Configure each column individually
@@ -146,26 +149,37 @@ def view():
     tree.heading("Vendor Address", text="Vendor Address")
     tree.column("Vendor Address", width=150)
 
+    tree.heading("Total Worth", text="Total Worth")
+    tree.column("Total Worth",width=100)
+    
+
     tree.pack(fill="both", expand=True, pady=10)
     tree.bind("<<TreeviewSelect>>", on_select)
 
     # --- Category controls in one line ---
     vendor_id_var = tk.StringVar()
     vendor_name_var = tk.StringVar()
+    total_worth_var=tk.DoubleVar()
   
 
-    cat_frame = tk.Frame(frame)
-    cat_frame.pack(fill="x", pady=10)
+    cat_frame_1 = tk.Frame(frame)
+    cat_frame_1.pack(fill="x", pady=10)
 
-    tk.Label(cat_frame, text="Vendor ID:", font=("Helvetica", 10, "bold")).pack(side="left", padx=(0,5))
-    tk.Label(cat_frame, textvariable=vendor_id_var, width=8).pack(side="left", padx=(0,10))
+    tk.Label(cat_frame_1, text="Vendor ID:", font=("Helvetica", 10, "bold")).pack(side="left", padx=(0,5))
+    tk.Label(cat_frame_1, textvariable=vendor_id_var, width=8).pack(side="left", padx=(0,10))
 
-    tk.Label(cat_frame, text="Vendor Name:", font=("Helvetica", 10, "bold")).pack(side="left", padx=(0,5))
-    tk.Entry(cat_frame, textvariable=vendor_name_var, width=20).pack(side="left", padx=(0,5))
+    tk.Label(cat_frame_1, text="Vendor Name:", font=("Helvetica", 10, "bold")).pack(side="left", padx=(0,5))
+    tk.Entry(cat_frame_1, textvariable=vendor_name_var, width=20).pack(side="left", padx=(0,5))
 
-    tk.Label(cat_frame, text="Vendor Address:", font=("Helvetica", 10, "bold")).pack(side="left", padx=(0,5))
-    vendor_address_text=tk.Text(cat_frame,width=50,height=4,wrap="word")
+    cat_frame_2 = tk.Frame(frame)
+    cat_frame_2.pack(fill="x", pady=10)
+
+    tk.Label(cat_frame_2, text="Vendor Address:", font=("Helvetica", 10, "bold")).pack(side="left", padx=(0,5))
+    vendor_address_text=tk.Text(cat_frame_2,width=50,height=4,wrap="word")
     vendor_address_text.pack(side="left", padx=(0,5))
+
+    tk.Label(cat_frame_2, text="Total Worth:", font=("Helvetica", 10, "bold")).pack(side="left", padx=(0,5))
+    tk.Label(cat_frame_2, textvariable=total_worth_var, width=8).pack(side="left", padx=(0,10))
 
     # --- Buttons below controls ---
     btn_frame = tk.Frame(frame)
