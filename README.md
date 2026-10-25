@@ -12,6 +12,10 @@ ease-stock was initially developed as a school project but quickly scaled into a
 *   **Streamlined UI:** A clean, easy-to-use menu system with a minimal learning curve.
 *   **Core Stock Management:** Efficient addition, modification, and withdrawal of inventory items.
 
+## Limitations:
+*  **1)** Keyboard shortcuts are not supported yet
+*  **2)** Unused imports are present in several parts of the code 
+
 ## Acknowledgments
 *   **Mentorship & QA:** Special thanks to my father for introducing me to industry-standard practices, providing meticulous architectural supervision, and conducting rigorous Quality Assurance (QA) testing on the software.
 *   **Development Tools:** Microsoft Copilot and Google Gemini were utilized as efficiency tools for syntax debugging and localized code optimization.
