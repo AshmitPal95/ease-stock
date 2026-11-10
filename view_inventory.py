@@ -2,15 +2,12 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 import mysql.connector
 import db.inventory_repo
+import config
 
 def view():
 
     def close_window():
         root.destroy()
-
-    def connect():
-        return  mysql.connector.connect( host="localhost", user='root',
-                                password="Siemens1234$", database="ACCOUNTING_RECORDS") 
 
     def fetch_data():
         return db.inventory_repo.fetch()
@@ -61,7 +58,7 @@ def view():
             tree.insert("", "end", values=row)
 
     def category_list():
-            conn = connect()
+            conn = config.db_connector()
             cursor = conn.cursor()
             cursor.execute("SELECT CATEGORY_ID, CATEGORY_NAME FROM CATEGORY_LIST")
             rows = cursor.fetchall()
@@ -77,7 +74,7 @@ def view():
             return categories
     
     def vendor_list():
-            conn = connect()
+            conn = config.db_connector()
             cursor = conn.cursor()
             cursor.execute("SELECT VENDOR_ID, VENDOR_NAME FROM VENDOR_LIST")
             rows = cursor.fetchall()

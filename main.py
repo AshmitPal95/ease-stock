@@ -1,9 +1,11 @@
 import mysql.connector
 import main_ui as userinterface
 import config
+import auto_log
 def main_function():
     
     create_db()
+    auto_log.main()
     userinterface.main()
 
 
@@ -65,6 +67,18 @@ def create_db():
         )
     """)
 
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS DATES (
+        TYPE VARCHAR(10) PRIMARY KEY NOT NULL,
+        DATE DATE
+        )
+    """)
+    cursor.execute("""
+        INSERT IGNORE INTO DATES
+        VALUES
+        ("START",NULL),
+        ("END",NULL)
+    """)
 
     conn.commit()
     cursor.close()

@@ -162,24 +162,24 @@ def view():
     total_worth_var=tk.DoubleVar()
   
 
-    cat_frame_1 = tk.Frame(frame)
-    cat_frame_1.pack(fill="x", pady=10)
+    vendor_frame_top = tk.Frame(frame)
+    vendor_frame_top.pack(fill="x", pady=10)
 
-    tk.Label(cat_frame_1, text="Vendor ID:", font=("Helvetica", 10, "bold")).pack(side="left", padx=(0,5))
-    tk.Label(cat_frame_1, textvariable=vendor_id_var, width=8).pack(side="left", padx=(0,10))
+    tk.Label(vendor_frame_top, text="Vendor ID:", font=("Helvetica", 10, "bold")).pack(side="left", padx=(0,5))
+    tk.Label(vendor_frame_top, textvariable=vendor_id_var, width=8).pack(side="left", padx=(0,10))
 
-    tk.Label(cat_frame_1, text="Vendor Name:", font=("Helvetica", 10, "bold")).pack(side="left", padx=(0,5))
-    tk.Entry(cat_frame_1, textvariable=vendor_name_var, width=20).pack(side="left", padx=(0,5))
+    tk.Label(vendor_frame_top, text="Vendor Name:", font=("Helvetica", 10, "bold")).pack(side="left", padx=(0,5))
+    tk.Entry(vendor_frame_top, textvariable=vendor_name_var, width=20).pack(side="left", padx=(0,5))
 
-    cat_frame_2 = tk.Frame(frame)
-    cat_frame_2.pack(fill="x", pady=10)
+    vendor_frame_bottom = tk.Frame(frame)
+    vendor_frame_bottom.pack(fill="x", pady=10)
 
-    tk.Label(cat_frame_2, text="Vendor Address:", font=("Helvetica", 10, "bold")).pack(side="left", padx=(0,5))
-    vendor_address_text=tk.Text(cat_frame_2,width=50,height=4,wrap="word")
+    tk.Label(vendor_frame_bottom, text="Vendor Address:", font=("Helvetica", 10, "bold")).pack(side="left", padx=(0,5))
+    vendor_address_text=tk.Text(vendor_frame_bottom,width=50,height=4,wrap="word")
     vendor_address_text.pack(side="left", padx=(0,5))
 
-    tk.Label(cat_frame_2, text="Total Worth:", font=("Helvetica", 10, "bold")).pack(side="left", padx=(0,5))
-    tk.Label(cat_frame_2, textvariable=total_worth_var, width=8).pack(side="left", padx=(0,10))
+    tk.Label(vendor_frame_bottom, text="Total Worth:", font=("Helvetica", 10, "bold")).pack(side="left", padx=(0,5))
+    tk.Label(vendor_frame_bottom, textvariable=total_worth_var, width=8).pack(side="left", padx=(0,10))
 
     # --- Buttons below controls ---
     btn_frame = tk.Frame(frame)
