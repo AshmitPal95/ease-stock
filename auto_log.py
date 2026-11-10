@@ -4,6 +4,7 @@ import db.history_repo
 import db.date_repo
 import os
 
+
 def main():
     def log():
         os.makedirs(

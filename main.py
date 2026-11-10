@@ -1,5 +1,5 @@
 import mysql.connector
-import main_ui as userinterface
+import main_menu_ui as userinterface
 import config
 import auto_log
 def main_function():
