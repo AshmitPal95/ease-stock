@@ -11,10 +11,11 @@ def main():
             r"C:\Users\Admin\ease-stock",
             exist_ok=True
         )
+        # Archive history records for the current date range
         rows=db.history_repo.fetch_history_date(start_date,end_date)
         with open(fr"C:\\Users\Admin\ease-stock\{start_date}_to_{end_date}.csv",'w',newline="") as f:
             writer = csv.writer(f)
-            writer.writerow(["HISTORY ID","INVOICE NUMBER","CATEGORY NAME","GRADE","GARDEN NAME","VENDOR NAME","NUM OF UNITS","UNIT WT","RATE","OPERATION TYPE","TRANSACTION DATE"])
+            writer.writerow(["HISTORY ID","INVOICE NUMBER","CATEGORY NAME","GRADE","GARDEN NAME","VENDOR NAME","GODOWN NAME","NUM OF UNITS","UNIT WT","RATE","OPERATION TYPE","TRANSACTION DATE"])
             writer.writerows(rows)
 
     start_date=db.date_repo.fetch_start_date()

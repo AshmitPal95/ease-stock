@@ -14,7 +14,11 @@ def main():
 
     def view_history():
         import view_history
-        view_history.view()   
+        view_history.view() 
+
+    def view_godown():
+        import view_godown
+        view_godown.view()  
 
     def back():
         root.destroy()
@@ -26,7 +30,7 @@ def main():
     screen_width = root.winfo_screenwidth()
     screen_height = root.winfo_screenheight() 
     window_width = 400
-    window_height = 450
+    window_height = 500
     x = (screen_width // 2) - (window_width // 2)
     y = (screen_height // 2) - (window_height // 2)
 
@@ -46,6 +50,9 @@ def main():
     
     history_button=tk.Button(root, text="View History", width=25, height=2,font=("Helvetica", 10, "bold"), command=view_history)
     history_button.pack(pady=10)
+
+    view_godown_button=tk.Button(root, text="View Godown", width=25, height=2,font=("Helvetica", 10, "bold"), command=view_godown)
+    view_godown_button.pack(pady=10)
 
     back_button=tk.Button(root, text="Back", width=25, height=2,font=("Helvetica", 10, "bold"),command=back)
     back_button.pack(pady=40)

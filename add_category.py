@@ -5,7 +5,7 @@ def add():
     
 
     def insert_category():
-        user_input=entry.get()
+        user_input=entry.get().strip()
         result=db.category_repo.check(user_input)
         if result>0:
             messagebox.showerror("Error","Category Already Exists",parent=root)

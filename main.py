@@ -11,7 +11,7 @@ def main_function():
 
 def create_db():
     print("creating DB tables")
-    conn=config.db_connector()
+    conn=config.db_connector_root()
     cursor = conn.cursor()
     
     cursor.execute("CREATE DATABASE IF NOT EXISTS ACCOUNTING_RECORDS")
@@ -33,6 +33,13 @@ def create_db():
     """)
 
     cursor.execute("""
+            CREATE TABLE IF NOT EXISTS GODOWN_LIST(
+            GODOWN_ID INT UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
+            GODOWN_NAME VARCHAR(50) NOT NULL
+            )
+        """)
+
+    cursor.execute("""
         CREATE TABLE IF NOT EXISTS CURRENT_INVENTORY (
             ENTRY_ID INT UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
             INVOICE_NUMBER INT NOT NULL,
@@ -40,12 +47,14 @@ def create_db():
             GRADE VARCHAR(50) NOT NULL,
             GARDEN_NAME VARCHAR(50) NOT NULL,
             VENDOR_ID INT UNSIGNED NOT NULL,
+            GODOWN_ID INT UNSIGNED NOT NULL,
             NUM_OF_UNITS INT NOT NULL,
             NUM_OF_UNITS_WITHDRAWN INT NOT NULL,
             UNIT_WT FLOAT NOT NULL,
             RATE FLOAT NOT NULL,
             FOREIGN KEY (CATEGORY_ID) REFERENCES CATEGORY_LIST(CATEGORY_ID),
-            FOREIGN KEY (VENDOR_ID) REFERENCES VENDOR_LIST(VENDOR_ID)
+            FOREIGN KEY (VENDOR_ID) REFERENCES VENDOR_LIST(VENDOR_ID),
+            FOREIGN KEY(GODOWN_ID) REFERENCES GODOWN_LIST(GODOWN_ID)
         )
     """)
 
@@ -57,15 +66,19 @@ def create_db():
             GRADE VARCHAR(50),
             GARDEN_NAME VARCHAR(50),
             VENDOR_ID INT UNSIGNED NOT NULL,
+            GODOWN_ID INT UNSIGNED NOT NULL,
             NUM_OF_UNITS INT UNSIGNED NOT NULL,
             UNIT_WT FLOAT NOT NULL,
             RATE FLOAT NOT NULL,
             OPERATION_TYPE VARCHAR(20) NOT NULL,
             TRANSACTION_DATE DATE NOT NULL,
             FOREIGN KEY (CATEGORY_ID) REFERENCES CATEGORY_LIST(CATEGORY_ID),
-            FOREIGN KEY (VENDOR_ID) REFERENCES VENDOR_LIST(VENDOR_ID)
+            FOREIGN KEY (VENDOR_ID) REFERENCES VENDOR_LIST(VENDOR_ID),
+            FOREIGN KEY(GODOWN_ID) REFERENCES GODOWN_LIST(GODOWN_ID)
         )
     """)
+
+    
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS DATES (
@@ -79,6 +92,16 @@ def create_db():
         ("START",NULL),
         ("END",NULL)
     """)
+
+    cursor.execute("CREATE USER IF NOT EXISTS 'reader'@'localhost' IDENTIFIED BY 'reader@161387'")
+    cursor.execute("GRANT SELECT ON ACCOUNTING_RECORDS.* TO 'reader'@'localhost' ")
+    cursor.execute("CREATE USER IF NOT EXISTS 'editor'@'localhost' IDENTIFIED BY 'editor@161387'")
+    cursor.execute("GRANT SELECT,INSERT,UPDATE,DELETE ON ACCOUNTING_RECORDS.* TO 'editor'@'localhost' ")
+    cursor.execute("FLUSH PRIVILEGES")
+
+    # Store application login password hash
+    cursor.execute("CREATE TABLE IF NOT EXISTS yjbbfxamb(SR_NO INT PRIMARY KEY,yjbbfxamb VARCHAR(255))") 
+    cursor.execute("INSERT IGNORE INTO yjbbfxamb VALUES(1,NULL)")
 
     conn.commit()
     cursor.close()

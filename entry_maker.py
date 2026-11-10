@@ -9,6 +9,7 @@ def make_entry():
     # Dictionaries to map display text → ID
     category_map = {}
     vendor_map = {}
+    godown_map={}
 
     import re
 
@@ -23,13 +24,15 @@ def make_entry():
         # Get selected display text
         category_display = category_entry.get()
         vendor_display = vendor_entry.get()
+        godown_display = godown_entry.get()
 
         # Look up IDs from maps
         category_id = category_map.get(category_display)
         vendor_id = vendor_map.get(vendor_display)
+        godown_id = godown_map.get(godown_display)
 
-        if not category_id or not vendor_id:
-            messagebox.showerror("Error", "Please select both Category and Vendor", parent=root)
+        if not category_id or not vendor_id or not godown_id:
+            messagebox.showerror("Error", "Please select  Category,Vendor and Godown", parent=root)
             return
 
         # ---------------- VALIDATION ----------------
@@ -107,7 +110,7 @@ def make_entry():
         else:
             try:
                 db.inventory_repo.add(invoice_num, category_id, grade, garden_name,
-                                    vendor_id, num_of_units_val, unit_wt_val, rate_val)
+                                    vendor_id,godown_id, num_of_units_val, unit_wt_val, rate_val)
                 messagebox.showinfo("Operation", "Entry Added Successfully", parent=root)
                 clear()
             except Exception as e:
@@ -128,6 +131,21 @@ def make_entry():
             category_map[display] = cid
             categories.append(display)
         return categories
+    
+    def godown_list():
+        conn = config.db_connector()
+        cursor = conn.cursor()
+        cursor.execute("SELECT GODOWN_ID, GODOWN_NAME FROM GODOWN_LIST")
+        rows = cursor.fetchall()
+        cursor.close()
+        conn.close()
+
+        godowns = []
+        for gid, gname in rows:
+            display = f"{gname}"   
+            godown_map[display] = gid
+            godowns.append(display)
+        return godowns
 
     def vendor_list():
         conn = config.db_connector()
@@ -148,6 +166,7 @@ def make_entry():
         invoice_num_entry.delete(0, tk.END)
         category_entry.set("")
         vendor_entry.set("")
+        godown_entry.set("")
         grade_entry.delete(0, tk.END)
         garden_name_entry.delete(0, tk.END)
         num_of_units_entry.delete(0, tk.END)
@@ -186,23 +205,28 @@ def make_entry():
     vendor_entry = ttk.Combobox(root, values=vendor_list(), width=47, state="readonly")
     vendor_entry.grid(row=4, column=1, padx=10, pady=5)
 
+    godown_label = tk.Label(root, text="Select Godown:", font=("Helvetica", 10, "bold"))
+    godown_label.grid(row=5, column=0, padx=10, pady=5, sticky="w")
+    godown_entry = ttk.Combobox(root, values=godown_list(), width=47, state="readonly")
+    godown_entry.grid(row=5, column=1, padx=10, pady=5)
+
     num_of_units_label = tk.Label(root, text="Enter Number of Units:", font=("Helvetica", 10, "bold"))
-    num_of_units_label.grid(row=5, column=0, padx=10, pady=5, sticky="w")
+    num_of_units_label.grid(row=6, column=0, padx=10, pady=5, sticky="w")
     num_of_units_entry = tk.Entry(root, width=50)
-    num_of_units_entry.grid(row=5, column=1, padx=10, pady=5)
+    num_of_units_entry.grid(row=6, column=1, padx=10, pady=5)
 
     unit_wt_label = tk.Label(root, text="Enter Unit Weight (in KG):", font=("Helvetica", 10, "bold"))
-    unit_wt_label.grid(row=6, column=0, padx=10, pady=5, sticky="w")
+    unit_wt_label.grid(row=7, column=0, padx=10, pady=5, sticky="w")
     unit_wt_entry = tk.Entry(root, width=50)
-    unit_wt_entry.grid(row=6, column=1, padx=10, pady=5)
+    unit_wt_entry.grid(row=7, column=1, padx=10, pady=5)
 
     rate_label = tk.Label(root, text="Enter Rate:", font=("Helvetica", 10, "bold"))
-    rate_label.grid(row=7, column=0, padx=10, pady=5, sticky="w")
+    rate_label.grid(row=8, column=0, padx=10, pady=5, sticky="w")
     rate_entry = tk.Entry(root, width=50)
-    rate_entry.grid(row=7, column=1, padx=10, pady=5)
+    rate_entry.grid(row=8, column=1, padx=10, pady=5)
 
     button_frame = tk.Frame(root)
-    button_frame.grid(row=8, column=0, columnspan=2, pady=20)
+    button_frame.grid(row=9, column=0, columnspan=2, pady=20)
     submit_button = tk.Button(button_frame, text="Submit", width=20, height=2,
                             font=("Helvetica", 10, "bold"), command=insert_entry)
     submit_button.pack(side="left", padx=10)

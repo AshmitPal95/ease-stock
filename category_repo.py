@@ -2,7 +2,7 @@ import mysql.connector
 import main
 import config
 
-def check(user_input):
+def check(user_input): 
    conn=config.db_connector()
    cursor=conn.cursor()
    cursor.execute("SELECT COUNT(*) FROM CATEGORY_LIST WHERE CATEGORY_NAME=%s",(user_input,))
@@ -21,7 +21,7 @@ def add(user_input):
 def fetch():
     conn = config.db_connector()
     cursor = conn.cursor()
-    cursor.execute("""
+    cursor.execute("""  
         SELECT
             c.CATEGORY_ID,
             c.CATEGORY_NAME,
@@ -41,7 +41,7 @@ def fetch():
             c.CATEGORY_NAME
         ORDER BY
             c.CATEGORY_NAME
-    """)
+    """)  # Calculate total inventory worth for each category. Worth = Available Units × Unit Weight × Rate
     rows = cursor.fetchall() 
     cursor.close()
     conn.close() 

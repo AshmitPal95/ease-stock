@@ -17,6 +17,10 @@ def main():
         import add_vendor
         add_vendor.add()
 
+    def add_godown():
+        import add_godown
+        add_godown.add()
+
     def back():
         root.destroy()
         import main_menu_ui
@@ -28,7 +32,7 @@ def main():
     screen_width = root.winfo_screenwidth()
     screen_height = root.winfo_screenheight() 
     window_width = 400
-    window_height = 450  
+    window_height = 500  
     x = (screen_width // 2) - (window_width // 2)
     y = (screen_height // 2) - (window_height // 2)
 
@@ -48,6 +52,9 @@ def main():
 
     add_vendor_button=tk.Button(root, text="Add Vendor", width=25, height=2,font=("Helvetica", 10, "bold"),command=add_vendor)
     add_vendor_button.pack(pady=10)
+
+    add_godown_button=tk.Button(root, text="Add Godown", width=25, height=2,font=("Helvetica", 10, "bold"),command=add_godown)
+    add_godown_button.pack(pady=10)
 
     back_button=tk.Button(root, text="Back", width=25, height=2,font=("Helvetica", 10, "bold"),command=back)
     back_button.pack(pady=40)

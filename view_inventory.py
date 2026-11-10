@@ -9,9 +9,10 @@ def view():
     def close_window():
         root.destroy()
 
-    def fetch_data():
-        return db.inventory_repo.fetch()
-
+    def fetch_all_data():
+        return db.inventory_repo.fetch_all_data()
+    def fetch_select_data():
+        return db.inventory_repo.fetch_select_data()
     def modify():
         entry_id = entry_id_var.get()
         invoice_num = invoice_num_var.get()
@@ -19,6 +20,7 @@ def view():
         grade = grade_var.get()
         garden_name = garden_name_var.get()
         vendor = vendor_var.get()
+        godown_id=godown_var.get()
         num_of_units = num_units_var.get()
         unit_wt = unit_wt_var.get()
         rate = rate_var.get()
@@ -26,18 +28,20 @@ def view():
         # Get selected display text
         category_display = category_entry.get()
         vendor_display = vendor_entry.get()
+        godown_display=godown_entry.get()
 
         # Look up IDs from maps
         category_id = category_map.get(category_display)
         vendor_id = vendor_map.get(vendor_display)
+        godown_id=godown_map.get(godown_display)
 
-        if not category_id or not vendor_id:
-            messagebox.showerror("Error", "Invalid category or vendor selection.", parent=root)
+        if not category_id or not vendor_id or not godown_id:
+            messagebox.showerror("Error", "Invalid category,vendor or godown selection.", parent=root)
             return
 
         try:
             db.inventory_repo.update( invoice_num, category_id,
-                grade, garden_name, vendor_id, num_of_units,
+                grade, garden_name, vendor_id,godown_id, num_of_units,
                 unit_wt, rate, entry_id )
             show_data()  # refresh treeview after modification
             messagebox.showinfo("Success", "Record updated successfully.", parent=root)
@@ -48,9 +52,13 @@ def view():
     def show_data(filter_text=""):
         for item in tree.get_children():
             tree.delete(item)
-        rows = fetch_data()
+        rows=None
+        if check_var.get():
+            rows = fetch_all_data()
+        else:
+            rows=fetch_select_data()
         for row in rows:
-            entry_id, invoice_number, category_id, grade, garden_name, vendor_id, num_of_units, unit_wt, rate, worth = row
+            entry_id, invoice_number, category_id, grade, garden_name, vendor_id,godown_id, num_of_units, unit_wt, rate, worth = row
             # Filter by invoice_number starting characters
             if filter_text:
                 if not str(invoice_number).startswith(filter_text):
@@ -87,11 +95,41 @@ def view():
                 vendor_map[display] = vid
                 vendors.append(display)
             return vendors
+    def godown_list():
+            conn = config.db_connector()
+            cursor = conn.cursor()
+            cursor.execute("SELECT GODOWN_ID, GODOWN_NAME FROM GODOWN_LIST")
+            rows = cursor.fetchall()
+            cursor.close()
+            conn.close()
+    
+            godowns = []
+            for gid, gname in rows:
+                display = f"{gname}"   
+                godown_map[display] = gid
+                godowns.append(display)
+            return godowns
 
     def delete():
-        entry_id=entry_id_var.get()
-        db.inventory_repo.delete(entry_id)
+        entry_id = entry_id_var.get()
 
+        proceed = messagebox.askyesno(
+            "Confirm",
+            "Delete selected record?",
+            parent=root
+        )
+
+        if proceed:
+            db.inventory_repo.delete(entry_id)
+
+            show_data()
+
+            messagebox.showinfo(
+                "Success",
+                "Record deleted successfully",
+                parent=root
+            )
+        
     def on_search(*args):
         filter_text = search_var.get().strip()
         show_data(filter_text)
@@ -107,9 +145,10 @@ def view():
                 grade_var.set(values[3])
                 garden_name_var.set(values[4])
                 vendor_var.set(values[5])
-                num_units_var.set(values[6])
-                unit_wt_var.set(values[7])
-                rate_var.set(values[8])
+                godown_var.set(values[6])
+                num_units_var.set(values[7])
+                unit_wt_var.set(values[8])
+                rate_var.set(values[9])
 
     def clear_search():
         search_var.set("")
@@ -146,10 +185,17 @@ def view():
     clear_button = tk.Button(search_frame, text="Clear", font=("Helvetica", 10, "bold"), command=clear_search)
     clear_button.pack(side="left", padx=10)
 
+    show_frame=tk.Frame(frame)
+    show_frame.pack(fill='x',pady=(0,10))
+
+    check_var=tk.BooleanVar()
+    checkbox=tk.Checkbutton(show_frame,text="Also Show Entries Where Number of Units is 0", width=50, height=2,font=("Helvetica", 10, "bold"),variable=check_var,command=show_data)
+    checkbox.pack(pady=20)
+
     # --- Treeview ---
     # columns = ("Entry ID", "Invoice Number","Category","Grade","Garden Name","Vendor",
     #         "No. of Units","No. of Units Withdrawn","Unit Weight(in KG)","Rate","Worth")
-    columns = ("Entry ID", "Invoice Number","Category","Grade","Garden Name","Vendor",
+    columns = ("Entry ID", "Invoice Number","Category","Grade","Garden Name","Vendor","Godown",
             "No. of Units","Unit Weight(in KG)","Rate","Worth")
     
     tree = ttk.Treeview(frame, columns=columns, show="headings")
@@ -168,30 +214,19 @@ def view():
     grade_var = tk.StringVar()
     garden_name_var = tk.StringVar()
     vendor_var = tk.StringVar()
+    godown_var=tk.StringVar()
     num_units_var = tk.IntVar()
     unit_wt_var = tk.DoubleVar()
     rate_var = tk.DoubleVar()
-
-    category_map = {}
-    vendor_map = {}
 
 
     # --- Form section below Treeview ---
     cat_frame = tk.Frame(frame)
     cat_frame.pack(fill="x", pady=10)
 
-    entry_id_var = tk.IntVar()
-    invoice_num_var = tk.IntVar()
-    category_var = tk.StringVar()
-    grade_var = tk.StringVar()
-    garden_name_var = tk.StringVar()
-    vendor_var = tk.StringVar()
-    num_units_var = tk.IntVar()
-    unit_wt_var = tk.DoubleVar()
-    rate_var = tk.DoubleVar()
-
     category_map = {}
     vendor_map = {}
+    godown_map={}
 
     # Row 1
     tk.Label(cat_frame, text="Entry ID:", font=("Helvetica", 10, "bold")).grid(row=0, column=0, sticky="w", padx=5, pady=5)
@@ -215,8 +250,12 @@ def view():
     vendor_entry = ttk.Combobox(cat_frame, textvariable=vendor_var, values=vendor_list(), width=20)
     vendor_entry.grid(row=1, column=3, sticky="w", padx=5, pady=5)
 
-    tk.Label(cat_frame, text="Number of Units:", font=("Helvetica", 10, "bold")).grid(row=1, column=4, sticky="w", padx=5, pady=5)
-    tk.Entry(cat_frame, textvariable=num_units_var, width=20).grid(row=1, column=5, sticky="w", padx=5, pady=5)
+    tk.Label(cat_frame, text="Godown:", font=("Helvetica", 10, "bold")).grid(row=1, column=4, sticky="w", padx=5, pady=5)
+    godown_entry = ttk.Combobox(cat_frame, textvariable=godown_var, values=godown_list(), width=20)
+    godown_entry.grid(row=1, column=5, sticky="w", padx=5, pady=5)
+
+    tk.Label(cat_frame, text="Number of Units:", font=("Helvetica", 10, "bold")).grid(row=1, column=6, sticky="w", padx=5, pady=5)
+    tk.Entry(cat_frame, textvariable=num_units_var, width=20).grid(row=1, column=7, sticky="w", padx=7, pady=5)
 
     # Row 3
     tk.Label(cat_frame, text="Unit Weight (KG):", font=("Helvetica", 10, "bold")).grid(row=2, column=0, sticky="w", padx=5, pady=5)

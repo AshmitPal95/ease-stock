@@ -12,7 +12,7 @@ def check(invoice_num):
    conn.close()
    return result[0]
 
-def add(invoice_num, category_id, grade, garden_name, vendor_id, num_of_units, unit_wt, rate):
+def add(invoice_num, category_id, grade, garden_name, vendor_id,godown_id, num_of_units, unit_wt, rate):
     conn = config.db_connector()
     cursor = conn.cursor()
     current_date = datetime.date.today()
@@ -20,12 +20,12 @@ def add(invoice_num, category_id, grade, garden_name, vendor_id, num_of_units, u
     # Insert into CURRENT_INVENTORY
     cursor.execute("""
         INSERT INTO CURRENT_INVENTORY ( INVOICE_NUMBER, CATEGORY_ID,
-            GRADE, GARDEN_NAME, VENDOR_ID, NUM_OF_UNITS,
+            GRADE, GARDEN_NAME, VENDOR_ID,GODOWN_ID, NUM_OF_UNITS,
             NUM_OF_UNITS_WITHDRAWN, UNIT_WT, RATE )
-        VALUES (%s, %s, %s, %s, %s, %s,0, %s, %s)
+        VALUES (%s, %s, %s, %s, %s, %s,%s,0,%s, %s)
     """, (
         invoice_num, category_id, grade, garden_name,
-        vendor_id, num_of_units, unit_wt, rate ))
+        vendor_id,godown_id, num_of_units, unit_wt, rate ))
 
     # Insert into HISTORY
     cursor.execute("""
@@ -35,23 +35,26 @@ def add(invoice_num, category_id, grade, garden_name, vendor_id, num_of_units, u
             GRADE,
             GARDEN_NAME,
             VENDOR_ID,
+            GODOWN_ID,
             NUM_OF_UNITS,
             UNIT_WT,
             RATE,
             TRANSACTION_DATE,
             OPERATION_TYPE
         )
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, 'Entry')
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s,%s, %s,%s)
     """, (
         invoice_num,
         category_id,
         grade,
         garden_name,
         vendor_id,
+        godown_id,
         num_of_units,
         unit_wt,
         rate,
-        current_date
+        current_date,
+        'Entry'
     ))
 
     conn.commit()
@@ -60,7 +63,7 @@ def add(invoice_num, category_id, grade, garden_name, vendor_id, num_of_units, u
 
 
 
-def fetch():
+def fetch_all_data():
     conn = config.db_connector()
     cursor = conn.cursor()
     cursor.execute("""SELECT 
@@ -70,6 +73,7 @@ def fetch():
             ci.GRADE,
             ci.GARDEN_NAME,
             vl.VENDOR_NAME,
+            g.GODOWN_NAME,
             ci.NUM_OF_UNITS,
             ci.UNIT_WT,
             ci.RATE,
@@ -77,14 +81,40 @@ def fetch():
         FROM CURRENT_INVENTORY ci
         JOIN CATEGORY_LIST cl ON ci.CATEGORY_ID = cl.CATEGORY_ID
         JOIN VENDOR_LIST vl ON ci.VENDOR_ID = vl.VENDOR_ID
+        JOIN GODOWN_LIST g ON ci.GODOWN_ID=g.GODOWN_ID
           """)
     rows = cursor.fetchall() 
     cursor.close()
     conn.close() 
     return rows
 
+def fetch_select_data():
+    conn = config.db_connector()
+    cursor = conn.cursor()
+    cursor.execute("""SELECT 
+            ci.ENTRY_ID,
+            ci.INVOICE_NUMBER,
+            cl.CATEGORY_NAME,
+            ci.GRADE,
+            ci.GARDEN_NAME,
+            vl.VENDOR_NAME,
+            g.GODOWN_NAME,
+            ci.NUM_OF_UNITS,
+            ci.UNIT_WT,
+            ci.RATE,
+            (ci.NUM_OF_UNITS * ci.UNIT_WT * ci.RATE) AS WORTH
+        FROM CURRENT_INVENTORY ci
+        JOIN CATEGORY_LIST cl ON ci.CATEGORY_ID = cl.CATEGORY_ID
+        JOIN VENDOR_LIST vl ON ci.VENDOR_ID = vl.VENDOR_ID
+        JOIN GODOWN_LIST g ON ci.GODOWN_ID=g.GODOWN_ID
+        WHERE ci.NUM_OF_UNITS > 0
+          """)
+    rows = cursor.fetchall() 
+    cursor.close()
+    conn.close() 
+    return rows
 
-def update(invoice_num, category_id, grade, garden_name, vendor_id, num_of_units, unit_wt, rate, entry_id):
+def update(invoice_num, category_id, grade, garden_name, vendor_id,godown_id, num_of_units, unit_wt, rate, entry_id):
     conn = config.db_connector()
     cursor = conn.cursor()
     current_date = datetime.date.today()
@@ -97,6 +127,7 @@ def update(invoice_num, category_id, grade, garden_name, vendor_id, num_of_units
             GRADE=%s,
             GARDEN_NAME=%s,
             VENDOR_ID=%s,
+            GODOWN_ID=%s,
             NUM_OF_UNITS=%s,
             UNIT_WT=%s,
             RATE=%s
@@ -107,6 +138,7 @@ def update(invoice_num, category_id, grade, garden_name, vendor_id, num_of_units
         grade,
         garden_name,
         vendor_id,
+        godown_id,
         num_of_units,
         unit_wt,
         rate,
@@ -121,23 +153,26 @@ def update(invoice_num, category_id, grade, garden_name, vendor_id, num_of_units
             GRADE,
             GARDEN_NAME,
             VENDOR_ID,
+            GODOWN_ID,
             NUM_OF_UNITS,
             UNIT_WT,
             RATE,
             TRANSACTION_DATE,
             OPERATION_TYPE
         )
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, 'Update')
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s,%s,%s)
     """, (
         invoice_num,
         category_id,
         grade,
         garden_name,
         vendor_id,
+        godown_id,
         num_of_units,
         unit_wt,
         rate,
-        current_date
+        current_date,
+        "Update"
     ))
 
     conn.commit()

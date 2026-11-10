@@ -3,12 +3,18 @@ from tkinter import ttk, messagebox
 
 def withdraw():
     import db.inventory_repo
-    def fetch_data():
-        return db.inventory_repo.fetch()
+    def fetch_all_data():
+        return db.inventory_repo.fetch_all_data()
+    def fetch_select_data():
+        return db.inventory_repo.fetch_select_data()
     def show_data(filter_text=""):
             for item in tree.get_children():
                 tree.delete(item)
-            rows = fetch_data()
+            rows=None
+            if check_var.get():
+                rows = fetch_all_data()
+            else:
+                rows=fetch_select_data()
             for row in rows:
                 entry_id, invoice_number, category_id, grade, garden_name, vendor_id, num_of_units, unit_wt, rate, worth = row
                 # Filter by invoice_number starting characters
@@ -90,6 +96,13 @@ def withdraw():
 
     clear_button = tk.Button(search_frame, text="Clear", font=("Helvetica", 10, "bold"), command=clear_search)
     clear_button.pack(side="left", padx=10)
+    
+    show_frame=tk.Frame(frame)
+    show_frame.pack(fill='x',pady=(0,10))
+
+    check_var=tk.BooleanVar()
+    checkbox=tk.Checkbutton(show_frame,text="Also Show Entries Where Number of Units is 0", width=50, height=2,font=("Helvetica", 10, "bold"),variable=check_var)
+    checkbox.pack(pady=20)
 
     # ---------------- Treeview Section ----------------
     # columns = ("Entry ID", "Invoice Number","Category","Grade","Garden Name","Vendor",

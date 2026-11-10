@@ -13,6 +13,7 @@ def fetch_history():
             h.GRADE,
             h.GARDEN_NAME,
             vl.VENDOR_NAME,
+            g.GODOWN_NAME,
             h.NUM_OF_UNITS,
             h.UNIT_WT,
             h.RATE,
@@ -21,6 +22,7 @@ def fetch_history():
         FROM HISTORY h
         JOIN CATEGORY_LIST cl ON h.CATEGORY_ID = cl.CATEGORY_ID
         JOIN VENDOR_LIST vl ON h.VENDOR_ID = vl.VENDOR_ID
+        JOIN GODOWN_LIST g ON h.GODOWN_ID=g.GODOWN_ID
         ORDER BY h.HISTORY_ID DESC
     """)
     rows = cursor.fetchall()
@@ -39,6 +41,7 @@ def fetch_history_date(start_date,end_date):
             h.GRADE,
             h.GARDEN_NAME,
             vl.VENDOR_NAME,
+            g.GODOWN_NAME,
             h.NUM_OF_UNITS,
             h.UNIT_WT,
             h.RATE,
@@ -47,6 +50,7 @@ def fetch_history_date(start_date,end_date):
         FROM HISTORY h
         JOIN CATEGORY_LIST cl ON h.CATEGORY_ID = cl.CATEGORY_ID
         JOIN VENDOR_LIST vl ON h.VENDOR_ID = vl.VENDOR_ID
+        JOIN GODOWN_LIST g ON h.GODOWN_ID=g.GODOWN_ID
         WHERE h.TRANSACTION_DATE BETWEEN %s AND %s
         ORDER BY h.HISTORY_ID DESC
     """, (start_date, end_date))
