@@ -15,8 +15,7 @@ def db_connector_root():#for connection
     return  mysql.connector.connect(
                 host="localhost",
                 user="root",
-                password=db_pwd,
-                database="ACCOUNTING_RECORDS"
+                password=db_pwd
             )
 def db_connector_reader():
     return mysql.connector.connect(

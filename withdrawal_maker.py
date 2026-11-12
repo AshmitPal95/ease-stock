@@ -16,7 +16,7 @@ def withdraw():
             else:
                 rows=fetch_select_data()
             for row in rows:
-                entry_id, invoice_number, category_id, grade, garden_name, vendor_id, num_of_units, unit_wt, rate, worth = row
+                entry_id, invoice_number, category_id, grade, garden_name, vendor_id,godown_id, num_of_units,num_of_units_withdrawn, unit_wt, rate, worth = row
                 # Filter by invoice_number starting characters
                 if filter_text:
                     if not str(invoice_number).startswith(filter_text):
@@ -27,13 +27,17 @@ def withdraw():
             
             limit=units_limit.get()
             withdrawn=units_withdrawn.get()
+            if withdrawn<=0:
+                 messagebox.showerror("Invalid Quantity","Please enter a positive number of units.",parent=root)
+                 return
 
             if limit < withdrawn: 
                 messagebox.showerror("Insufficient Balance","The number of units to be withdrawn is more than the balance available ",parent=root)
+                return
                 
             else:
                 try:
-                    choice=messagebox.askyesno("Confirm Withdrawal","Confirm Withdrawal")
+                    choice=messagebox.askyesno("Confirm Withdrawal","Confirm Withdrawal",parent=root)
                     if choice:
                          db.inventory_repo.withdraw(withdrawn,entry_id.get())
                          show_data()
@@ -52,7 +56,7 @@ def withdraw():
                 values = tree.item(selected, "values")
                 if values:
                      entry_id.set(values[0])
-                     units_limit.set(values[6])
+                     units_limit.set(int(values[7])-int(values[8]))
                                    
     def clear_search():
             search_var.set("")
@@ -68,8 +72,8 @@ def withdraw():
     # Center the window on screen
     screen_width = root.winfo_screenwidth()
     screen_height = root.winfo_screenheight() 
-    window_width = 1000
-    window_height = 400   
+    window_width = 1250
+    window_height = 500   
     x = (screen_width // 2) - (window_width // 2)
     y = (screen_height // 2) - (window_height // 2)
     root.geometry(f"{window_width}x{window_height}+{x}+{y}")
@@ -101,15 +105,15 @@ def withdraw():
     show_frame.pack(fill='x',pady=(0,10))
 
     check_var=tk.BooleanVar()
-    checkbox=tk.Checkbutton(show_frame,text="Also Show Entries Where Number of Units is 0", width=50, height=2,font=("Helvetica", 10, "bold"),variable=check_var)
+    checkbox=tk.Checkbutton(show_frame,text="Show Entries Where Balance is 0", width=50, height=2,font=("Helvetica", 10, "bold"),variable=check_var,command=show_data)
     checkbox.pack(pady=20)
 
     # ---------------- Treeview Section ----------------
     # columns = ("Entry ID", "Invoice Number","Category","Grade","Garden Name","Vendor",
     #         "No. of Units","No. of Units Withdrawn","Unit Weight(in KG)","Rate","Worth")
 
-    columns = ("Entry ID", "Invoice Number","Category","Grade","Garden Name","Vendor",
-            "No. of Units","Unit Weight(in KG)","Rate","Worth")
+    columns = ("Entry ID", "Invoice Number","Category","Grade","Garden Name","Vendor","Godown",
+            "No. of Units","No. of Units Withdrawn","Unit Weight(in KG)","Rate","Current Worth")
 
     tree = ttk.Treeview(frame, columns=columns, show="headings")
 
@@ -130,22 +134,25 @@ def withdraw():
     tree.column("Garden Name", width=50)
 
     tree.heading("Vendor", text="Vendor")
-    tree.column("Vendor", width=20)
+    tree.column("Vendor", width=50)
+
+    tree.heading("Godown",text="Godown")
+    tree.column("Godown",width=50)
 
     tree.heading("No. of Units", text="No. of Units")
-    tree.column("No. of Units", width=15)
+    tree.column("No. of Units", width=50)
 
-    # tree.heading("No. of Units Withdrawn", text="No. of Units Withdrawn")
-    # tree.column("No. of Units Withdrawn", width=55)
+    tree.heading("No. of Units Withdrawn", text="No. of Units Withdrawn")
+    tree.column("No. of Units Withdrawn", width=70)
 
     tree.heading("Unit Weight(in KG)", text="Unit weight(in KG)")
-    tree.column("Unit Weight(in KG)", width=40)
+    tree.column("Unit Weight(in KG)", width=50)
 
     tree.heading("Rate", text="Rate")
-    tree.column("Rate", width=10)
+    tree.column("Rate", width=20)
 
-    tree.heading("Worth", text="Worth")
-    tree.column("Worth", width=15)
+    tree.heading("Current Worth", text="Current Worth")
+    tree.column("Current Worth", width=35)
 
     tree.pack(fill="both", expand=True)
     tree.bind("<<TreeviewSelect>>", on_select)

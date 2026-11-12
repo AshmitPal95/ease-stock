@@ -66,23 +66,27 @@ def view():
         if not category_id:
             messagebox.showerror("Error", "No category selected", parent=root)
             return
+        if total_worth_var.get()>0.0:
+             messagebox.showerror("Category In Use","Can't delete category as it is in use",parent=root)
+             return
+
         proceed=messagebox.askyesno("Confirm deletion","Are you sure you want to delete",parent=root)
         if proceed:
             try:
-                        
-                db.category_repo.delete(category_id)
-                messagebox.showinfo("Success", "Category deleted successfully", parent=root)
-            
-                # Refresh the Treeview
-                show_data()
-            
-                # Clear the entry fields
-                category_id_var.set("")
-                category_name_var.set("")
-                total_worth_var.set(0.0)
-            
-                # Clear Treeview selection
-                tree.selection_remove(tree.selection())
+                     
+                    db.category_repo.delete(category_id)
+                    messagebox.showinfo("Success", "Category deleted successfully", parent=root)
+                
+                    # Refresh the Treeview
+                    show_data()
+                
+                    # Clear the entry fields
+                    category_id_var.set("")
+                    category_name_var.set("")
+                    total_worth_var.set(0.0)
+                
+                    # Clear Treeview selection
+                    tree.selection_remove(tree.selection())
             
             except Exception as e:
                         messagebox.showerror("Error", f"Failed to delete: {e}", parent=root)

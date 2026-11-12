@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 import password_cryptography
 import password_verifier
+import main_menu_ui
 import config
 import re
 
@@ -35,27 +36,33 @@ def  change():
                 conn.commit()
                 cursor.close()
                 conn.close()
-                root.destroy()
                 messagebox.showinfo("Success","Password has been changed successfully")
+                root.destroy()
+                main_menu_ui.main()
+                
             except Exception as e:
                         messagebox.showerror("Error", f"Password Change failed: {e}", parent=root)
 
                 
+    def back():
+            root.destroy()
+            import main_menu_ui
+            main_menu_ui.main()
 
-
-    root = tk.Toplevel()
+    root = tk.Tk()
     root.title("Change Password")
-    root.transient()
-    root.grab_set()
 
     screen_width = root.winfo_screenwidth()
     screen_height = root.winfo_screenheight() 
-    window_width = 600
-    window_height = 300
+    window_width = 500
+    window_height = 600
     x = (screen_width // 2) - (window_width // 2)
     y = (screen_height // 2) - (window_height // 2)
     
-    root.geometry(f"{window_width}x{window_height}+{x}+{y}") 
+    root.geometry(f"{window_width}x{window_height}+{x}+{y}")
+     
+    heading=tk.Label(root,text="Change Password",font=("Helvetica", 14, "bold"))
+    heading.pack(pady=15)
     
     set_pwd_label=tk.Label(root,text="Enter New Password",font=("Helvetica", 14, "bold"))
     set_pwd_label.pack(pady=15)
@@ -67,20 +74,26 @@ def  change():
     confirm_pwd_label.pack(pady=15)
 
     confirm_pwd_entry=tk.Entry(root,width=50,show="*")
-    confirm_pwd_entry.pack(pady=10)
+    confirm_pwd_entry.pack(pady=15)
 
     check_var=tk.BooleanVar(value=True)
     checkbox=tk.Checkbutton(root,text="Hide Password", width=25, height=2,font=("Helvetica", 10, "bold"),variable=check_var,command=Hide_passkey)
-    checkbox.pack(pady=20)
+    checkbox.pack(pady=15)
+
+    rule_label = tk.Label(root,text="Password must contain:\n• At least 8 characters\n• Letters\n• Digits\n• Special symbols",justify='center',font=("Helvetica", 10, "bold"))
+    rule_label.pack(pady=15)
 
     button_frame=tk.Frame(root)
     button_frame.pack(pady=15)
 
-    set_button=tk.Button(button_frame,text="Set Password",width=25,font=("Helvetica", 14, "bold"),command=set_pwd)
+    set_button=tk.Button(button_frame,text="Set Password",width=25,font=("Helvetica", 10, "bold"),command=set_pwd)
     set_button.pack(side="left",padx=10)
 
-    clear_button=tk.Button(button_frame,text="Clear",width=25,font=("Helvetica", 14, "bold"),command=clear)
+    clear_button=tk.Button(button_frame,text="Clear",width=25,font=("Helvetica", 10, "bold"),command=clear)
     clear_button.pack(side="left",padx=10)
 
-    root.wait_window(root)
+    back_button=tk.Button(root, text="Back", width=25,font=("Helvetica", 10, "bold"),command=back)
+    back_button.pack(pady=15)
 
+    root.mainloop()
+ 

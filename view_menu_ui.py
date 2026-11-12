@@ -23,9 +23,15 @@ def main():
     def back():
         root.destroy()
         import main_menu_ui
-        main_menu_ui.main()   
+        main_menu_ui.main()  
+    
+    def close_window():
+        root.destroy()
+        import main_menu_ui
+        main_menu_ui.main() 
 
     root = tk.Tk()
+    root.protocol("WM_DELETE_WINDOW", close_window)
     root.title("View Menu")  
     screen_width = root.winfo_screenwidth()
     screen_height = root.winfo_screenheight() 

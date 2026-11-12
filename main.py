@@ -1,12 +1,13 @@
 import mysql.connector
-import main_menu_ui as userinterface
+import user_password_box
 import config
 import auto_log
+import password_cryptography
 def main_function():
     
     create_db()
     auto_log.main()
-    userinterface.main()
+    user_password_box.main()
 
 
 def create_db():
@@ -100,8 +101,10 @@ def create_db():
     cursor.execute("FLUSH PRIVILEGES")
 
     # Store application login password hash
-    cursor.execute("CREATE TABLE IF NOT EXISTS yjbbfxamb(SR_NO INT PRIMARY KEY,yjbbfxamb VARCHAR(255))") 
-    cursor.execute("INSERT IGNORE INTO yjbbfxamb VALUES(1,NULL)")
+    cursor.execute("CREATE TABLE IF NOT EXISTS yjbbfxamb(SR_NO INT PRIMARY KEY,yjbbfxamb VARCHAR(255))")
+    default_passkey="easestock@1234"
+    crypt_pwd=password_cryptography.hash_password(default_passkey)
+    cursor.execute("INSERT IGNORE INTO yjbbfxamb VALUES(1,%s)",(crypt_pwd,))
 
     conn.commit()
     cursor.close()

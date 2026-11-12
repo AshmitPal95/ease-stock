@@ -75,9 +75,10 @@ def fetch_all_data():
             vl.VENDOR_NAME,
             g.GODOWN_NAME,
             ci.NUM_OF_UNITS,
+            ci.NUM_OF_UNITS_WITHDRAWN,
             ci.UNIT_WT,
             ci.RATE,
-            (ci.NUM_OF_UNITS * ci.UNIT_WT * ci.RATE) AS WORTH
+            ((ci.NUM_OF_UNITS - ci.NUM_OF_UNITS_WITHDRAWN)*ci.UNIT_WT*ci.RATE) AS WORTH
         FROM CURRENT_INVENTORY ci
         JOIN CATEGORY_LIST cl ON ci.CATEGORY_ID = cl.CATEGORY_ID
         JOIN VENDOR_LIST vl ON ci.VENDOR_ID = vl.VENDOR_ID
@@ -100,14 +101,15 @@ def fetch_select_data():
             vl.VENDOR_NAME,
             g.GODOWN_NAME,
             ci.NUM_OF_UNITS,
+            ci.NUM_OF_UNITS_WITHDRAWN,
             ci.UNIT_WT,
             ci.RATE,
-            (ci.NUM_OF_UNITS * ci.UNIT_WT * ci.RATE) AS WORTH
+            ((ci.NUM_OF_UNITS - ci.NUM_OF_UNITS_WITHDRAWN)*ci.UNIT_WT*ci.RATE) AS WORTH
         FROM CURRENT_INVENTORY ci
         JOIN CATEGORY_LIST cl ON ci.CATEGORY_ID = cl.CATEGORY_ID
         JOIN VENDOR_LIST vl ON ci.VENDOR_ID = vl.VENDOR_ID
         JOIN GODOWN_LIST g ON ci.GODOWN_ID=g.GODOWN_ID
-        WHERE ci.NUM_OF_UNITS > 0
+        WHERE (ci.NUM_OF_UNITS - ci.NUM_OF_UNITS_WITHDRAWN)>0
           """)
     rows = cursor.fetchall() 
     cursor.close()
@@ -185,17 +187,60 @@ def withdraw(num_of_units, entry_id):
     cursor = conn.cursor()
 
     # Fetch current units
-    cursor.execute("SELECT NUM_OF_UNITS FROM CURRENT_INVENTORY WHERE ENTRY_ID=%s", (entry_id,))
-    current_units = cursor.fetchone()[0]
+    cursor.execute("SELECT NUM_OF_UNITS_WITHDRAWN FROM CURRENT_INVENTORY WHERE ENTRY_ID=%s", (entry_id,))
+    current_units_withdrawn = cursor.fetchone()[0]
 
     # Calculate new balance
-    new_num_of_units = int(current_units) - int(num_of_units)
+    new_num_of_units_withdrawn = int(current_units_withdrawn)+int(num_of_units)
 
     # Update table
     cursor.execute(
-        "UPDATE CURRENT_INVENTORY SET NUM_OF_UNITS=%s WHERE ENTRY_ID=%s",
-        (new_num_of_units, entry_id)
+        "UPDATE CURRENT_INVENTORY SET NUM_OF_UNITS_WITHDRAWN=%s WHERE ENTRY_ID=%s",
+        (new_num_of_units_withdrawn, entry_id)
     )
+    cursor.execute("""SELECT 
+                    INVOICE_NUMBER,
+                    CATEGORY_ID,
+                    GRADE,
+                    GARDEN_NAME,
+                    VENDOR_ID,
+                    GODOWN_ID,
+                    UNIT_WT,
+                    RATE
+                    FROM CURRENT_INVENTORY 
+                    WHERE ENTRY_ID=%s""",(entry_id,))
+    row=cursor.fetchone()
+    invoice_num,category_id,grade,garden_name,vendor_id,godown_id,unit_wt,rate=row 
+    current_date=datetime.date.today()
+
+    cursor.execute("""
+            INSERT INTO HISTORY (
+                INVOICE_NUMBER,
+                CATEGORY_ID,
+                GRADE,
+                GARDEN_NAME,
+                VENDOR_ID,
+                GODOWN_ID,
+                NUM_OF_UNITS,
+                UNIT_WT,
+                RATE,
+                TRANSACTION_DATE,
+                OPERATION_TYPE
+            )
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s,%s,%s)
+        """, (
+            invoice_num,
+            category_id,
+            grade,
+            garden_name,
+            vendor_id,
+            godown_id,
+            num_of_units,
+            unit_wt,
+            rate,
+            current_date,
+            "Withdrawal"
+        ))
 
     conn.commit()
     cursor.close()

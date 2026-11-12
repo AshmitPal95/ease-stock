@@ -58,7 +58,7 @@ def view():
         else:
             rows=fetch_select_data()
         for row in rows:
-            entry_id, invoice_number, category_id, grade, garden_name, vendor_id,godown_id, num_of_units, unit_wt, rate, worth = row
+            entry_id, invoice_number, category_id, grade, garden_name, vendor_id,godown_id, num_of_units,num_of_units_withdrawn, unit_wt, rate, worth = row
             # Filter by invoice_number starting characters
             if filter_text:
                 if not str(invoice_number).startswith(filter_text):
@@ -147,8 +147,8 @@ def view():
                 vendor_var.set(values[5])
                 godown_var.set(values[6])
                 num_units_var.set(values[7])
-                unit_wt_var.set(values[8])
-                rate_var.set(values[9])
+                unit_wt_var.set(values[9])
+                rate_var.set(values[10])
 
     def clear_search():
         search_var.set("")
@@ -189,14 +189,14 @@ def view():
     show_frame.pack(fill='x',pady=(0,10))
 
     check_var=tk.BooleanVar()
-    checkbox=tk.Checkbutton(show_frame,text="Also Show Entries Where Number of Units is 0", width=50, height=2,font=("Helvetica", 10, "bold"),variable=check_var,command=show_data)
+    checkbox=tk.Checkbutton(show_frame,text="Also Show Entries Where Balance is 0", width=50, height=2,font=("Helvetica", 10, "bold"),variable=check_var,command=show_data)
     checkbox.pack(pady=20)
 
     # --- Treeview ---
     # columns = ("Entry ID", "Invoice Number","Category","Grade","Garden Name","Vendor",
     #         "No. of Units","No. of Units Withdrawn","Unit Weight(in KG)","Rate","Worth")
     columns = ("Entry ID", "Invoice Number","Category","Grade","Garden Name","Vendor","Godown",
-            "No. of Units","Unit Weight(in KG)","Rate","Worth")
+            "No. of Units","No. of Units Withdrawn","Unit Weight(in KG)","Rate","Worth")
     
     tree = ttk.Treeview(frame, columns=columns, show="headings")
 

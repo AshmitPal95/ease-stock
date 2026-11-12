@@ -6,7 +6,7 @@ def view():
 
     # Fetch history data from repo
     def fetch_data():
-        return db.history_repo.fetch_history()  # <-- implement this in your repo
+        return db.history_repo.fetch_history() 
 
     # Display data in treeview, with optional filter
     def show_data(filter_text=""):
@@ -14,7 +14,7 @@ def view():
             tree.delete(item)
         rows = fetch_data()
         for row in rows:
-            history_id, invoice_number, category_id, grade, garden_name, vendor_id, num_of_units, unit_wt, rate, operation_type, transaction_date = row
+            history_id, invoice_number, category_id, grade, garden_name, vendor_id, godown_id,num_of_units, unit_wt, rate, operation_type, transaction_date = row
             # Filter by invoice_number starting characters
             if filter_text:
                 if not str(invoice_number).startswith(filter_text):
@@ -42,8 +42,8 @@ def view():
     # Center the window
     screen_width = root.winfo_screenwidth()
     screen_height = root.winfo_screenheight()
-    window_width = 1100
-    window_height = 500
+    window_width = 1250
+    window_height = 550
     x = (screen_width // 2) - (window_width // 2)
     y = (screen_height // 2) - (window_height // 2)
     root.geometry(f"{window_width}x{window_height}+{x}+{y}")
@@ -70,7 +70,7 @@ def view():
     clear_button.pack(side="left", padx=10)
 
     # ---------------- Treeview Section ----------------
-    columns = ("History ID", "Invoice Number", "Category", "Grade", "Garden Name", "Vendor",
+    columns = ("History ID", "Invoice Number", "Category", "Grade", "Garden Name", "Vendor","Godown",
                "No. of Units", "Unit Weight(in KG)", "Rate", "Operation Type", "Transaction Date")
 
     tree = ttk.Treeview(frame, columns=columns, show="headings")
@@ -92,7 +92,10 @@ def view():
     tree.column("Garden Name", width=120)
 
     tree.heading("Vendor", text="Vendor")
-    tree.column("Vendor", width=80)
+    tree.column("Vendor", width=70)
+
+    tree.heading("Godown",text="Godown")
+    tree.column("Godown",width=70)
 
     tree.heading("No. of Units", text="No. of Units")
     tree.column("No. of Units", width=100)

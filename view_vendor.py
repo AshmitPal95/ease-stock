@@ -69,6 +69,9 @@ def view():
         if not vendor_id:
             messagebox.showerror("Error", "No Vendor selected", parent=root)
             return
+        if total_worth_var.get()>0.0:
+            messagebox.showerror("Vendor In Use","Can't delete vendor as it is in use",parent=root)
+            return
         proceed=messagebox.askyesno("Confirm deletion","Are you sure you want to delete",parent=root)
         if proceed:
             try:

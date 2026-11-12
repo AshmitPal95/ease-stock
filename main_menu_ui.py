@@ -13,15 +13,16 @@ def main():
 
     def change_pwd():
         root.destroy()
-        import change_password
-        change_password.change()
+        import change_password_user_verification
+        change_password_user_verification.main()
+
 
     root = tk.Tk()
     root.title("Main Menu")  
     screen_width = root.winfo_screenwidth()
     screen_height = root.winfo_screenheight() 
     window_width = 400
-    window_height = 400 
+    window_height = 300
     x = (screen_width // 2) - (window_width // 2)
     y = (screen_height // 2) - (window_height // 2) 
    
@@ -35,11 +36,9 @@ def main():
 
     view_button=tk.Button(root, text="View", width=25, height=2,font=("Helvetica", 10, "bold"),command=view)
     view_button.pack(pady=10)
-    
+
     change_pwd_button=tk.Button(root,text="Change Password",width=25, height=2,font=("Helvetica", 10, "bold"),command=change_pwd)
     change_pwd_button.pack(pady=10)
-
-    
 
     root.mainloop()
 

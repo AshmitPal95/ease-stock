@@ -66,6 +66,9 @@ def view():
         if not godown_id:
             messagebox.showerror("Error", "No godown selected", parent=root)
             return
+        if total_worth_var.get()>0.0:
+            messagebox.showerror("Godown In Use","Can't delete godown as it is in use",parent=root)
+            return
         proceed=messagebox.askyesno("Confirm deletion","Are you sure you want to delete",parent=root)
         if proceed:
             try:

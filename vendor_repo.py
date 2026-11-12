@@ -10,6 +10,7 @@ def check(user_input):
    cursor.close()
    conn.close()
    return result[0]
+
 def add(user_input,user_address):
    conn=config.db_connector()
    cursor=conn.cursor()
@@ -28,7 +29,7 @@ def fetch():
             v.VENDOR_ADDRESS,
             COALESCE(
             SUM(
-            c.NUM_OF_UNITS*
+            (c.NUM_OF_UNITS-c.NUM_OF_UNITS_WITHDRAWN)*
             c.UNIT_WT*
             c.RATE),0
             ) AS TOTAL_WORTH
